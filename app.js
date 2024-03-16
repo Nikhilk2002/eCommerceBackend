@@ -13,3 +13,7 @@ const PORT = process.env.PORT;
 app.listen(PORT,()=>{
     console.log(`Server started at port ${PORT}`);
 });
+
+app.use(cors())
+app.use("/",userRouter)
+app.use("/admin",adminRouter)
