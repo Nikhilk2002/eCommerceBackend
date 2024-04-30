@@ -6,7 +6,7 @@ const dbConnect=require("./Config/dbconnection");
 const dbconnection = require('./Config/dbconnection');
 const app=express();
 const userRouter = require('./Route/UserRouter'); 
-// const adminRouter = require('./Route/AdminRouter')
+const adminRouter = require('./Route/AdminRouter')
 
 
 
@@ -16,7 +16,7 @@ dbconnection.dbConnect();
 app.use(express.json())
 app.use(cors())
 app.use("/",userRouter)
-// app.use("/admin",adminRouter)
+app.use("/admin",adminRouter)
 
 const PORT = process.env.PORT;
 app.listen(PORT,()=>{
