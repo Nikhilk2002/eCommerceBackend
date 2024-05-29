@@ -1,6 +1,7 @@
 const adminModel = require("../Model/adminModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const Product =require("../Model/productModel")
 const UserModel = require("../Model/UserModel");
 const maxAge = 3 * 24 * 60 * 60;
 
@@ -66,3 +67,32 @@ module.exports.userList = async (req, res, next) => {
     });
   }
 };
+
+
+module.exports.addProduct =async (req,res)=>{
+  try {
+      const { prod_name ,title, price, description,image,catogery}=req.body;
+         
+      const products=new Product({prod_name:prod_name ,price:price, description:description,image: image,title:title,catogery:catogery});
+      await products.save();
+      res.json({message:"product added successfully"});
+  } catch (error) {
+      res.status(400).json({error:error.message});
+      
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
