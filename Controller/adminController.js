@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const Product =require("../Model/productModel")
 const UserModel = require("../Model/UserModel");
+const productModel=require("../Model/productModel")
 const maxAge = 3 * 24 * 60 * 60;
 
 const createToken = (adminId) => {
@@ -82,7 +83,25 @@ module.exports.addProduct =async (req,res)=>{
   }
 };
 
+module.exports.productList=async (req,res,next)=>{
 
+  try{
+    const data=await productModel.find();
+
+    res.status(200).json({
+      message: "Products fetched",
+      status: true,
+      productList: data,
+    });
+  }
+  catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Internal server error during product fetching",
+      status: false,
+    });
+  }
+}
 
 
 
