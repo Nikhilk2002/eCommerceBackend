@@ -1,10 +1,15 @@
 const express = require("express");
-const { Login, userList,addProduct, productList} = require("../Controller/adminController");
+const { Login, userList,addProduct, productList,removeUser} = require("../Controller/adminController");
 const adminAuth =require("../Middlewear/adminAuth")
 const router = express.Router();
+
 //POST Methods
 router.post("/login", Login);
 router.post("/add", addProduct);
+
+//Delete Mwthods
+
+router.delete('/user/:userId',removeUser);
 
 //GET Methods
 router.get("/user",userList)

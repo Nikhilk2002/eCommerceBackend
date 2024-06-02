@@ -11,6 +11,8 @@ const createToken = (adminId) => {
   return token;
 };
 
+//ADMIN LOGGIN
+
 module.exports.Login = async (req, res, next) => {
   console.log(req.body, "@@@@@@@@@@@@@@@@@@@@@@@");
   const { email, password } = req.body;
@@ -50,6 +52,7 @@ module.exports.Login = async (req, res, next) => {
   }
 };
 
+//USER LIST
 
 module.exports.userList = async (req, res, next) => {
   try{
@@ -69,6 +72,21 @@ module.exports.userList = async (req, res, next) => {
   }
 };
 
+
+//REMOVE User
+
+exports.removeUser = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    await UserModel.findByIdAndDelete(userId);
+    res.status(200).json({ message: "User removed successfully", status: true });
+  } catch (error) {
+    console.error("Error removing user:", error);
+    res.status(500).json({ message: "Internal server error", status: false });
+  }
+};
+
+//ADD PRODUCT
 
 module.exports.addProduct =async (req,res)=>{
   try {
