@@ -90,9 +90,9 @@ exports.removeUser = async (req, res) => {
 
 module.exports.addProduct =async (req,res)=>{
   try {
-      const { prod_name ,title, price, description,image,catogery}=req.body;
+      const { prod_name, price, description,image,category}=req.body;
          
-      const products=new Product({prod_name:prod_name ,price:price, description:description,image: image,title:title,catogery:catogery});
+      const products=new Product({prod_name:prod_name ,price:price, description:description,image: image,category:category});
       await products.save();
       res.json({message:"product added successfully"});
   } catch (error) {
@@ -100,6 +100,8 @@ module.exports.addProduct =async (req,res)=>{
       
   }
 };
+
+//List Product
 
 module.exports.productList=async (req,res,next)=>{
 
@@ -122,8 +124,20 @@ module.exports.productList=async (req,res,next)=>{
 }
 
 
+//DELETE 
 
 
+
+module.exports.deleteProduct = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    await productModel.findByIdAndDelete(productId);
+    res.status(200).json({ message: "Product removed successfully", status: true });
+  } catch (error) {
+    console.error("Error removing user:", error);
+    res.status(500).json({ message: "Internal server error", status: false });
+  }
+};
 
 
 

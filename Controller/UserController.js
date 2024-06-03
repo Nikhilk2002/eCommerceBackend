@@ -1,6 +1,8 @@
 const UserModel = require("../Model/UserModel");
 const jwt = require('jsonwebtoken');
 const bcrypt =require("bcrypt")
+const productModel=require('../Model/productModel')
+
 
 const createToken = (userId) => {
     const token = jwt.sign({userId}, "JWT", { expiresIn: '2d'});
@@ -79,23 +81,26 @@ module.exports.Login = async(req,res,next)=>{
 };
 
 
+module.exports.shopProduct=async(req,res,next)=>{
+    try{
+        const data =await productModel.find();
 
+        res.json({
+            message:"Product Data fetched",
+            status:true,
+            shopProduct:data,
+        });
 
+    }
+    catch(error){
+        console.log(error);
+        res.status(500).json({
+            message:"Internal server error during product fetching",
+            status:false,
+        });
+    }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+};
 
 
 
