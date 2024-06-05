@@ -1,5 +1,5 @@
 const express = require("express");
-const { Login, userList,addProduct, productList,removeUser,deleteProduct} = require("../Controller/adminController");
+const { Login, userList,addProduct, productList,removeUser,deleteProduct,editProduct} = require("../Controller/adminController");
 const adminAuth =require("../Middlewear/adminAuth")
 const router = express.Router();
 
@@ -16,6 +16,11 @@ router.delete('/product/:productId',deleteProduct)
 //GET Methods
 router.get("/user",userList)
 router.get("/product",productList)
+
+
+//Put method
+
+router.put('/edit/:productId',editProduct);
 
 
 

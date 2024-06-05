@@ -124,6 +124,36 @@ module.exports.productList=async (req,res,next)=>{
 }
 
 
+// Edit a product
+module.exports.editProduct = async (req, res, next) => {
+  const { productId } = req.params;
+  const productData = req.body;
+
+  try {
+    const updatedProduct = await productModel.findByIdAndUpdate(productId, productData, { new: true });
+
+    if (!updatedProduct) {
+      return res.status(404).json({
+        message: "Product not found",
+        status: false,
+      });
+    }
+
+    res.status(200).json({
+      message: "Product updated successfully",
+      status: true,
+      updatedProduct,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Internal server error during product update",
+      status: false,
+    });
+  }
+};
+
+
 //DELETE 
 
 

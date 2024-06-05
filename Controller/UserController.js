@@ -81,41 +81,20 @@ module.exports.Login = async(req,res,next)=>{
 };
 
 
-module.exports.shopProduct=async(req,res,next)=>{
-    try{
-        const data =await productModel.find();
 
-        res.json({
-            message:"Product Data fetched",
-            status:true,
-            shopProduct:data,
-        });
-
+module.exports.shopProduct = async (req, res, next) => {
+    try {
+      const data = await productModel.find();
+      res.json({
+        message: "Product Data fetched",
+        status: true,
+        shopProduct: data,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        message: "Internal server error during product fetching",
+        status: false,
+      });
     }
-    catch(error){
-        console.log(error);
-        res.status(500).json({
-            message:"Internal server error during product fetching",
-            status:false,
-        });
-    }
-
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  };
