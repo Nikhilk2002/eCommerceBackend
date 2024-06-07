@@ -14,15 +14,15 @@ router.delete('/product/:productId',adminAuth, deleteProduct)
 
 
 //GET Methods
-router.get("/user",adminAuth, userList)
+router.get("/user",adminAuth,adminAuth, userList)
 router.get("/product",adminAuth, productList)
 
 
-router.get('/edit/:id',adminAuth,getProductById)
+router.get('/product/:id',getProductById)
 
 //Put method
 
-router.put('/edit/:productId',adminAuth, editProduct);
+router.put('/product/:id', editProduct);
 
 
 

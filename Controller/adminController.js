@@ -125,47 +125,35 @@ module.exports.productList=async (req,res,next)=>{
 
 
 // Edit a product
-module.exports.editProduct = async (req, res, next) => {
-  const { productId } = req.params;
-  const productData = req.body;
 
-  try {
-    const updatedProduct = await productModel.findByIdAndUpdate(productId, productData, { new: true });
-
-    if (!updatedProduct) {
-      return res.status(404).json({
-        message: "Product not found",
-        status: false,
-      });
+module.exports.editProduct = async (req, res) => {
+  try{
+    const product = await productModel.findById(req.params.id);
+    if(!product){
+      return res.status(404).json({ message: "Product not found "});
     }
 
-    res.status(200).json({
-      message: "Product updated successfully",
-      status: true,
-      updatedProduct,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      message: "Internal server error during product update",
-      status: false,
-    });
+    Object.assign(product, req.body);
+
+    const updatedProduct = await product.save();
+    res.status(200).json(updatedProduct);
+  } catch(error) {
+    res.status(400).json({ message: error.message});
   }
 };
 
-
-module.exports.getProductById = async (req, res, next) => {
+module.exports.getProductById = async (req, res) => {
   try {
-    const product = await productModel.findById(req.params.id);
+    const productId = req.params.id;
 
+    const product = await productModel.findById(productId);
     if (!product) {
-      return res.status(404).json({ message: "Product not found" });
+      return res.status(404).json({ message: 'Product not found' });
     }
-
     res.status(200).json(product);
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Failed to fetch product", error });
+    console.log(error)
+    res.status(500).json({ message: error.message });
   }
 };
 
