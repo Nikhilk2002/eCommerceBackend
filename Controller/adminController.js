@@ -7,7 +7,7 @@ const productModel=require("../Model/productModel")
 const maxAge = 3 * 24 * 60 * 60;
 
 const createToken = (adminId) => {
-  const token = jwt.sign({ adminId }, "JWT", { expiresIn: maxAge });
+  const token = jwt.sign({ adminId }, "adminjwt", { expiresIn: maxAge });
   return token;
 };
 
@@ -150,6 +150,22 @@ module.exports.editProduct = async (req, res, next) => {
       message: "Internal server error during product update",
       status: false,
     });
+  }
+};
+
+
+module.exports.getProductById = async (req, res, next) => {
+  try {
+    const product = await productModel.findById(req.params.id);
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    res.status(200).json(product);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Failed to fetch product", error });
   }
 };
 

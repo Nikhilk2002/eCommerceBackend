@@ -15,9 +15,9 @@ module.exports = async (req, res, next) => {
         message: "No auth token",
       });
     }
-    const decode = jwt.verify(authToken, "JWT");
+    const decode = jwt.verify(authToken, "adminjwt");
 
-    const admin = await adminModel.findOne({ _id: decode.id });
+    const admin = await adminModel.findOne({ _id: decode.adminId });
 
     if (!admin) {
       return res.json({

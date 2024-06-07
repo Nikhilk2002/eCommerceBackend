@@ -6,7 +6,7 @@ module.exports =async (req,res,next)=>{
     try{
         const authHeader = req.headers.authorization;
         console.log(authHeader,"Middlewear one");
-        const authToken = authHeader && authHeader.split(" ")[i];
+        const authToken = authHeader && authHeader.split(" ")[1];
         console.log(authToken,"Middlewear two");
 
         if(!authToken){
@@ -16,8 +16,8 @@ module.exports =async (req,res,next)=>{
                 message:"No auth token",
             });
         }
-        const decode =jwt.verify(authToken,"JWT");
-        const user =await UserModel.findOne({_id:decode.id});
+        const decode =jwt.verify(authToken,"jwt");
+        const user =await UserModel.findOne({_id:decode.userId});
 
         if(!user){
             return res.json({

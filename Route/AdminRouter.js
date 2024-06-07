@@ -1,26 +1,28 @@
 const express = require("express");
-const { Login, userList,addProduct, productList,removeUser,deleteProduct,editProduct} = require("../Controller/adminController");
+const { Login, userList,addProduct, productList,removeUser,deleteProduct,editProduct, getProductById} = require("../Controller/adminController");
 const adminAuth =require("../Middlewear/adminAuth")
 const router = express.Router();
 
 //POST Methods
 router.post("/login", Login);
-router.post("/add", addProduct);
+router.post("/add",adminAuth, addProduct);
 
 //Delete Mwthods
 
-router.delete('/user/:userId',removeUser);
-router.delete('/product/:productId',deleteProduct)
+router.delete('/user/:userId',adminAuth, removeUser);
+router.delete('/product/:productId',adminAuth, deleteProduct)
 
 
 //GET Methods
-router.get("/user",userList)
-router.get("/product",productList)
+router.get("/user",adminAuth, userList)
+router.get("/product",adminAuth, productList)
 
+
+router.get('/edit/:id',adminAuth,getProductById)
 
 //Put method
 
-router.put('/edit/:productId',editProduct);
+router.put('/edit/:productId',adminAuth, editProduct);
 
 
 
