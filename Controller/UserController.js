@@ -100,6 +100,28 @@ module.exports.shopProduct = async (req, res, next) => {
 };
 
 
+module.exports.childProduct = async (req, res, next) => {
+  try {
+    const data = await productModel.find({
+      category:"Child"
+
+    }
+   );
+    res.json({
+      message: "Child Product Data fetched",
+      status: true,
+      shopProduct: data,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Internal server error during product fetching",
+      status: false,
+    });
+  }
+};
+
+
 
 
 module.exports.userStatus = async (req, res) => {

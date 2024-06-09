@@ -1,5 +1,5 @@
 const express = require("express");
-const { Signup,Login,shopProduct, userStatus} = require("../Controller/UserController");
+const { Signup,Login,shopProduct, userStatus, childProduct} = require("../Controller/UserController");
 const userAuth=require("../Middlewear/userAuth")
 const route = express.Router();
 
@@ -11,7 +11,7 @@ route.post('/login',Login)
 //GET Methods
 
 route.get('/shop', shopProduct)
-
+route.get('/child',childProduct)
 
 route.get('/auth/status',userAuth,userStatus)
 
