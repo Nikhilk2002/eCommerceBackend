@@ -1,18 +1,19 @@
 const express = require("express");
-const { Signup,Login,shopProduct, userStatus, childProduct} = require("../Controller/UserController");
+const { Signup,Login,shopProduct, userStatus, childProduct, adultProduct} = require("../Controller/UserController");
 const userAuth=require("../Middlewear/userAuth")
-const route = express.Router();
+const router = express.Router();
 
 //POST Method
 
-route.post('/signup',Signup)
-route.post('/login',Login)
+router.post('/signup',Signup)
+router.post('/login',Login)
 
 //GET Methods
 
-route.get('/shop', shopProduct)
-route.get('/child',childProduct)
+router.get('/shop',userAuth, shopProduct)
+router.get('/child',userAuth, childProduct)
+router.get('/adult',userAuth, adultProduct)
 
-route.get('/auth/status',userAuth,userStatus)
+router.get('/auth/status',userAuth,userStatus)
 
-module.exports=route;
+module.exports=router;
