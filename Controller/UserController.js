@@ -145,6 +145,48 @@ module.exports.adultProduct = async (req, res, next) => {
 };
 
 
+
+module.exports.productDetails = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const singleProduct = await productModel.findById(productId);
+    if (singleProduct) {
+      return res.status(200).json({
+        message: "success",
+        status: true,
+        product: singleProduct,
+      });
+    }
+    res.status(404).json({
+      message: "Product not found",
+      status: false,
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Internal server error",
+      status: false,
+    });
+  }
+};
+
+
+
+module.exports.getUser = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    if (userId) {
+      res.status(200).json({ message: "User id fetched", userId: userId });
+    } else {
+      res.status(404).json({ message: "User id not found" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports.userStatus = async (req, res) => {
   try {
     const user = req.user;
