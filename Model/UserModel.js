@@ -19,7 +19,24 @@ const userSchema = new mongoose.Schema({
     blockstatus: {
         type: Boolean,
         default: false
+    },
+    cart:{
+        type:Array,
+        required:true
+    },
+    like:{
+        type:Array,
+        required:true
+    },
+    address:{
+        type:Array,
+        required:true
+    },
+    summary:{
+        type:Array,
+        required:true
     }
+    
 });
 
 

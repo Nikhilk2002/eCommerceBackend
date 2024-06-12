@@ -200,3 +200,51 @@ module.exports.userStatus = async (req, res) => {
     console.log(error);
   }
 };
+
+//Add Cart
+
+
+module.exports.addCart = async (req, res) => {
+  try {
+    const { userEmail, productId, quantity, price } = req.body;
+
+    // Detailed validation
+    if (!userEmail || typeof userEmail !== 'string') {
+      return res.status(400).json({ message: "Invalid or missing userEmail" });
+    }
+    if (!productId || typeof productId !== 'string') {
+      return res.status(400).json({ message: "Invalid or missing productId" });
+    }
+    if (quantity == null || typeof quantity !== 'number' || quantity <= 0) {
+      return res.status(400).json({ message: "Invalid or missing quantity" });
+    }
+    if (price == null || typeof price !== 'number' || price < 0) {
+      return res.status(400).json({ message: "Invalid or missing price" });
+    }
+
+    const user = await UserModel.findOne({ email: userEmail });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const totalPrice = price * quantity;
+
+    const cartItem = user.cart.find(item => item.productId === productId);
+    if (cartItem) {
+      return res.status(409).json({ message: "Product already added" });
+    } else {
+      user.cart.push({
+        productId,
+        price: totalPrice,
+        quantity
+      });
+
+      await user.save();
+      return res.status(200).json({ message: "Successfully added to cart" });
+    }
+  } catch (error) {
+    console.error("Error adding to cart:", error); // Log the error for debugging purposes
+    return res.status(500).json({ message: "Unable to add to cart", error: error.message });
+  }
+};
