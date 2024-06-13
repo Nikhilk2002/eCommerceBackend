@@ -2,10 +2,11 @@ const UserModel = require("../Model/UserModel");
 const jwt = require('jsonwebtoken');
 const bcrypt = require("bcrypt")
 const productModel = require('../Model/productModel')
+const maxAge = 3 * 24 * 60 * 60;
 
 
 const createToken = (userId) => {
-  const token = jwt.sign({ userId }, "jwt", { expiresIn: '2d' });
+  const token = jwt.sign({ userId }, "jwt", { expiresIn: maxAge });
   return token;
 };
 
@@ -203,12 +204,10 @@ module.exports.userStatus = async (req, res) => {
 
 //Add Cart
 
-
 module.exports.addCart = async (req, res) => {
   try {
-    const { userEmail, productId, quantity, price } = req.body;
+    const { userEmail, productId, quantity } = req.body;
 
-    // Detailed validation
     if (!userEmail || typeof userEmail !== 'string') {
       return res.status(400).json({ message: "Invalid or missing userEmail" });
     }
@@ -218,9 +217,6 @@ module.exports.addCart = async (req, res) => {
     if (quantity == null || typeof quantity !== 'number' || quantity <= 0) {
       return res.status(400).json({ message: "Invalid or missing quantity" });
     }
-    if (price == null || typeof price !== 'number' || price < 0) {
-      return res.status(400).json({ message: "Invalid or missing price" });
-    }
 
     const user = await UserModel.findOne({ email: userEmail });
 
@@ -228,7 +224,13 @@ module.exports.addCart = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const totalPrice = price * quantity;
+    const product = await productModel.findOne({ _id: productId });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    const totalPrice = product.price * quantity;
 
     const cartItem = user.cart.find(item => item.productId === productId);
     if (cartItem) {
@@ -244,7 +246,45 @@ module.exports.addCart = async (req, res) => {
       return res.status(200).json({ message: "Successfully added to cart" });
     }
   } catch (error) {
-    console.error("Error adding to cart:", error); // Log the error for debugging purposes
+    console.error("Error adding to cart:", error); 
     return res.status(500).json({ message: "Unable to add to cart", error: error.message });
   }
 };
+
+
+
+module.exports.removeCart = async (req, res) => {
+  try {
+    const { userEmail, productId } = req.body;
+
+    if (!userEmail || typeof userEmail !== 'string') {
+      return res.status(400).json({ message: "Invalid or missing userEmail" });
+    }
+    if (!productId || typeof productId !== 'string') {
+      return res.status(400).json({ message: "Invalid or missing productId" });
+    }
+
+    const user = await UserModel.findOne({ email: userEmail });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const cartItemIndex = user.cart.findIndex(item => item.productId === productId);
+    if (cartItemIndex === -1) {
+      return res.status(404).json({ message: "Product not found in cart" });
+    } else {
+      user.cart.splice(cartItemIndex, 1);
+      await user.save();
+      return res.status(200).json({ message: "Successfully removed from cart" });
+    }
+  } catch (error) {
+    console.error("Error removing from cart:", error);
+    return res.status(500).json({ message: "Unable to remove from cart", error: error.message });
+  }
+};
+
+
+
+
+
