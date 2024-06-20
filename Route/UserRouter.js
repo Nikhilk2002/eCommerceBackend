@@ -1,5 +1,5 @@
 const express = require("express");
-const { Signup,Login,shopProduct, userStatus, childProduct, adultProduct, productDetails, getUser, addCart, removeCart} = require("../Controller/UserController");
+const { Signup,Login,shopProduct, userStatus, childProduct, adultProduct, productDetails, getUser, addCart, removeCart, getCart, AddToWishlist} = require("../Controller/UserController");
 const userAuth=require("../Middlewear/userAuth")
 const router = express.Router();
 
@@ -20,8 +20,12 @@ router.get('/user/:id',getUser)
 
 //Cart code
 
-router.post('/addcart',addCart)
-router.delete('/removecart',removeCart)
+router.post('/addcart',userAuth,addCart)
+router.delete('/removecart',userAuth,removeCart)
+router.get('/getcart',getCart)
 
+
+//WishList
+router.post("/wishlist",userAuth, AddToWishlist);
 
 module.exports=router;

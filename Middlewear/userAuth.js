@@ -16,7 +16,7 @@ module.exports =async (req,res,next)=>{
                 message:"No auth token",
             });
         }
-        const decode =jwt.verify(authToken,"jwt");
+        const decode =jwt.verify(authToken,"JWT");
         const user =await UserModel.findOne({_id:decode.userId});
 
         if(!user){
