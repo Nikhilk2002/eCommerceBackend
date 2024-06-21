@@ -204,115 +204,68 @@ module.exports.userStatus = async (req, res) => {
 
 //Add Cart
 
-module.exports.addCart = async (req, res) => {
+
+module.exports.addToCart = async (req, res) => {
   try {
-    const { userEmail, productId, quantity } = req.body;
+    const userId = req.user._id;
+    const { productId, quantity } = req.body;
 
-    if (!userEmail || typeof userEmail !== 'string') {
-      return res.status(400).json({ message: "Invalid or missing userEmail" });
-    }
-    if (!productId || typeof productId !== 'string') {
-      return res.status(400).json({ message: "Invalid or missing productId" });
-    }
-    if (quantity == null || typeof quantity !== 'number' || quantity <= 0) {
-      return res.status(400).json({ message: "Invalid or missing quantity" });
-    }
-
-    const user = await UserModel.findOne({ email: userEmail });
+    const user = await UserModel.findById(userId);
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const product = await productModel.findOne({ _id: productId });
+    const product = await productModel.findById(productId);
 
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
 
-    const totalPrice = product.price * quantity;
+    const cartItemIndex = user.cart.findIndex(
+      (cartItem) => cartItem.product.toString() === productId
+    );
 
-    const cartItem = user.cart.find(item => item.productId === productId);
-    if (cartItem) {
-      return res.status(409).json({ message: "Product already added" });
+    if (cartItemIndex > -1) {
+      user.cart[cartItemIndex].quantity += quantity;
     } else {
-      user.cart.push({
-        productId,
-        price: totalPrice,
-        quantity
-      });
-
-      await user.save();
-      return res.status(200).json({ message: "Successfully added to cart" });
+      user.cart.push({ product: productId, quantity: quantity });
     }
+
+    await user.save();
+
+    res.status(200).json({
+      message: "Product added to cart",
+      cart: user.cart,
+      status: true,
+    });
   } catch (error) {
-    console.error("Error adding to cart:", error); 
-    return res.status(500).json({ message: "Unable to add to cart", error: error.message });
+    res.status(500).json({
+      message: "An error occurred",
+      error: error.message,
+      status: false,
+    });
   }
 };
-
-
-
-module.exports.removeCart = async (req, res) => {
-  try {
-    const { userEmail, productId } = req.body;
-
-    if (!userEmail || typeof userEmail !== 'string') {
-      return res.status(400).json({ message: "Invalid or missing userEmail" });
-    }
-    if (!productId || typeof productId !== 'string') {
-      return res.status(400).json({ message: "Invalid or missing productId" });
-    }
-
-    const user = await UserModel.findOne({ email: userEmail });
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    const cartItemIndex = user.cart.findIndex(item => item.productId === productId);
-    if (cartItemIndex === -1) {
-      return res.status(404).json({ message: "Product not found in cart" });
-    } else {
-      user.cart.splice(cartItemIndex, 1);
-      await user.save();
-      return res.status(200).json({ message: "Successfully removed from cart" });
-    }
-  } catch (error) {
-    console.error("Error removing from cart:", error);
-    return res.status(500).json({ message: "Unable to remove from cart", error: error.message });
-  }
-};
-
-
 
 module.exports.getCart = async (req, res) => {
   try {
-    const { userEmail } = req.query;
-
-    if (!userEmail || typeof userEmail !== 'string') {
-      return res.status(400).json({ message: "Invalid or missing userEmail" });
-    }
-
-    const user = await UserModel.findOne({ email: userEmail });
+    const userId = req.user._id;
+    const user = await UserModel.findById(userId).populate("cart.product");
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res.status(404).json({
+        message: "User not found",
+      });
     }
-
-    const cartItems = user.cart.map(item => ({
-      productId: item.productId,
-      price: item.price,
-      quantity: item.quantity
-    }));
-
-    return res.status(200).json({ cart: cartItems });
+    res.json(user.cart);
   } catch (error) {
-    console.error("Error retrieving cart:", error);
-    return res.status(500).json({ message: "Unable to retrieve cart", error: error.message });
+    res.status(500).json({
+      message: "Server error",
+      error,
+    });
   }
 };
-
 
 
 
@@ -338,14 +291,14 @@ module.exports.AddToWishlist = async (req, res) => {
     }
 
     if (user.wishlist.includes(productId)) {
-      // Remove product from wishlist
+      
       user.wishlist = user.wishlist.filter((id) => id.toString() !== productId);
       await user.save();
       return res.status(201).json({
         message: "Product removed from wishlist",
       });
     } else {
-      // Add product to wishlist
+      
       user.wishlist.push(productId);
       await user.save();
       return res.status(200).json({
@@ -358,3 +311,70 @@ module.exports.AddToWishlist = async (req, res) => {
     });
   }
 };
+
+
+
+module.exports.checkWislist = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const user = await UserModel.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    const isInWishlist = user.wishlist.includes(productId);
+    res.status(200).json({
+      inWishlist: isInWishlist,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Server error",
+    });
+  }
+};
+
+
+module.exports.getWishlist = async (req, res) => {
+  try {
+    const data = await UserModel.findById(req.user._id).populate("wishlist");
+
+    res.status(200).json(data.wishlist);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: error.message,
+    });
+  }
+};
+
+module.exports.removeWishlist = async (req, res) => {
+  const userId = req.user._id;
+  const productId = req.params.productId;
+
+  try {
+    const user = await UserModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    user.wishlist = user.wishlist.filter(
+      (item) => item.toString() !== productId
+    );
+    await user.save();
+
+    res.status(200).json({
+      message: "product removed from wishlist",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal server error",
+      error,
+    });
+  }
+};
+
