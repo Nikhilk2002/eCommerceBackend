@@ -7,6 +7,8 @@ const router = express.Router();
 
 router.post('/signup',Signup)
 router.post('/login',Login)
+
+
 //GET Methods
 
 router.get('/shop',shopProduct)
@@ -20,10 +22,10 @@ router.get('/user/:id',getUser)
 
 //Cart code
 
-router.post('/cart/add',addToCart)
-router.get('/cart',getCart)
-router.delete('/cart/remove',removeFromCart)
-router.put('/cart/edit', editCart);
+router.post('/cart/add',userAuth, addToCart)
+router.get('/cart',userAuth, getCart)
+router.delete('/cart/remove',userAuth, removeFromCart)
+router.put('/cart/edit',userAuth, editCart);
 
 
 //WishList

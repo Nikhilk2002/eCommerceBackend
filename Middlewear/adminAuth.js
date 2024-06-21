@@ -4,9 +4,9 @@ const adminModel = require("../Model/adminModel");
 module.exports = async (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
-    console.log(authHeader, "Middleware One");
+    // console.log(authHeader, "Middleware One");
     const authToken = authHeader && authHeader.split(" ")[1];
-    console.log(authToken, "Middleware Two");
+    // console.log(authToken, "Middleware Two");
 
     if (!authToken) {
       return res.json({

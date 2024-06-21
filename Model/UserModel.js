@@ -16,24 +16,36 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    cart:{
-        type:Array,
-        required:true
-    },
-    like:{
-        type:Array,
-        required:true
-    },
-    address:{
-        type:Array,
-        required:true
+    cart: [
+        {
+            product: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "products"
+            },
+            quantity: {
+                type: Number,
+                default: 1,
+            }
+        }
+    ],
+    wishlist: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "products"
+    }],
+    address: {
+        type: Array,
+        required: true
     }
-   
-    
+
+
 });
 
 
-userSchema.pre("save", async function(next) {
+userSchema.pre("save", async function (next) {
+    if (!this.isModified("password")) {
+        return next();
+      }
+    
     try {
         const salt = await bcrypt.genSalt();
         const hashedPassword = await bcrypt.hash(this.password, salt);

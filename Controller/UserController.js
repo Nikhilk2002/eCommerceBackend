@@ -6,7 +6,7 @@ const maxAge = 3 * 24 * 60 * 60;
 
 
 const createToken = (userId) => {
-  const token = jwt.sign({ userId }, "jwt", { expiresIn: maxAge });
+  const token = jwt.sign({ userId }, "JWT", { expiresIn: maxAge });
   return token;
 };
 
@@ -26,7 +26,7 @@ module.exports.Signup = async (req, res, next) => {
     });
 
     const userDetails = await (newUser.save());
-    const token = createToken(UserModel._id);
+    const token = createToken(userDetails._id);
     return res.json({
       message: "Account created Successfully",
       status: true,
