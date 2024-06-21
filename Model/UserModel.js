@@ -16,10 +16,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    blockstatus: {
-        type: Boolean,
-        default: false
-    },
     cart:{
         type:Array,
         required:true
@@ -31,11 +27,8 @@ const userSchema = new mongoose.Schema({
     address:{
         type:Array,
         required:true
-    },
-    summary:{
-        type:Array,
-        required:true
     }
+   
     
 });
 

@@ -204,7 +204,6 @@ module.exports.userStatus = async (req, res) => {
 
 //Add Cart
 
-
 module.exports.addToCart = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -267,6 +266,83 @@ module.exports.getCart = async (req, res) => {
   }
 };
 
+
+module.exports.removeFromCart = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { productId } = req.body;
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const cartItemIndex = user.cart.findIndex(
+      (cartItem) => cartItem.product.toString() === productId
+    );
+
+    if (cartItemIndex > -1) {
+      user.cart.splice(cartItemIndex, 1);
+      await user.save();
+      return res.status(200).json({
+        message: "Product removed from cart",
+        cart: user.cart,
+        status: true,
+      });
+    } else {
+      return res.status(404).json({
+        message: "Product not found in cart",
+        status: false,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "An error occurred",
+      error: error.message,
+      status: false,
+    });
+  }
+};
+
+
+module.exports.editCart = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const { productId, quantity } = req.body;
+
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const cartItemIndex = user.cart.findIndex(
+      (cartItem) => cartItem.product.toString() === productId
+    );
+
+    if (cartItemIndex > -1) {
+      user.cart[cartItemIndex].quantity = quantity;
+      await user.save();
+      return res.status(200).json({
+        message: "Cart updated successfully",
+        cart: user.cart,
+        status: true,
+      });
+    } else {
+      return res.status(404).json({
+        message: "Product not found in cart",
+        status: false,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message: "An error occurred",
+      error: error.message,
+      status: false,
+    });
+  }
+};
 
 
 //WishList

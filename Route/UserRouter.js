@@ -1,5 +1,5 @@
 const express = require("express");
-const { Signup,Login,shopProduct, userStatus, childProduct, adultProduct, productDetails, getUser, AddToWishlist, checkWislist, getWishlist, removeWishlist, addToCart, getCart} = require("../Controller/UserController");
+const { Signup,Login,shopProduct, userStatus, childProduct, adultProduct, productDetails, getUser, AddToWishlist, checkWislist, getWishlist, removeWishlist, addToCart, getCart, removeFromCart, editCart} = require("../Controller/UserController");
 const userAuth=require("../Middlewear/userAuth")
 const router = express.Router();
 
@@ -22,6 +22,8 @@ router.get('/user/:id',getUser)
 
 router.post('/cart/add',addToCart)
 router.get('/cart',getCart)
+router.delete('/cart/remove',removeFromCart)
+router.put('/cart/edit', editCart);
 
 
 //WishList
